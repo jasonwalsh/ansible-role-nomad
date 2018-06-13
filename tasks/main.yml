@@ -1,0 +1,67 @@
+---
+
+- name: Install required software packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  become: yes
+  with_items:
+    - unzip
+
+- name: Create the nomad user
+  group:
+    name: nomad
+    state: present
+  become: yes
+
+- name: Create the nomad group
+  user:
+    groups:
+      - nomad
+    name: nomad
+    shell: /usr/bin/false
+    state: present
+  become: yes
+
+- name: Download nomad
+  get_url:
+    dest: /tmp
+    url: https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_amd64.zip
+  register: response
+
+- name: Install nomad
+  unarchive:
+    dest: /usr/local/bin
+    remote_src: yes
+    src: "{{ response.dest }}"
+  become: yes
+  when: response.dest is defined
+
+- name: Create the nomad agent directories
+  file:
+    group: nomad
+    owner: nomad
+    path: "{{ item }}"
+    state: directory
+  become: yes
+  with_items:
+    - /etc/nomad.d
+    - "{{ nomad_data_dir }}"
+
+- name: Copy the nomad unit configuration file
+  copy:
+    dest: /lib/systemd/system/nomad.service
+    remote_src: no
+    src: nomad.service
+  become: yes
+
+- name: Copy the nomad agent configuration
+  template:
+    dest: /etc/nomad.d/agent.hcl
+    group: nomad
+    owner: nomad
+    src: agent.hcl.j2
+  become: yes
+  notify:
+    - restart nomad

@@ -1,0 +1,7 @@
+---
+
+nomad_bind_addr: 0.0.0.0
+nomad_bootstrap_expect: 1
+nomad_data_dir: /var/lib/nomad
+nomad_server: true
+nomad_version: 0.8.4

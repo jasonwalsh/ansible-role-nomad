@@ -1,0 +1,9 @@
+[Unit]
+Description=Nomad
+Documentation=https://www.nomadproject.io/docs/index.html
+
+[Service]
+ExecStart=/usr/local/bin/nomad agent -config /etc/nomad.d
+
+[Install]
+WantedBy=multi-user.target

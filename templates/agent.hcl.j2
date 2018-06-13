@@ -1,0 +1,8 @@
+bind_addr = "{{ nomad_bind_addr }}"
+
+data_dir = "{{ nomad_data_dir }}"
+
+server {
+  bootstrap_expect = {{ nomad_bootstrap_expect }}
+  enabled          = {{ nomad_server | to_json }}
+}
