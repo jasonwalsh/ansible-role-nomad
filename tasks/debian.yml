@@ -1,0 +1,17 @@
+---
+
+- name: Install required software packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  become: yes
+  with_items:
+    - unzip
+
+- name: Copy the nomad unit configuration file
+  copy:
+    dest: /lib/systemd/system/nomad.service
+    remote_src: no
+    src: nomad.service
+  become: yes

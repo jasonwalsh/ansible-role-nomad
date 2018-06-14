@@ -1,13 +1,7 @@
 ---
 
-- name: Install required software packages
-  apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
-  become: yes
-  with_items:
-    - unzip
+- include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
 - name: Create the nomad user
   group:
@@ -48,13 +42,6 @@
   with_items:
     - /etc/nomad.d
     - "{{ nomad_data_dir }}"
-
-- name: Copy the nomad unit configuration file
-  copy:
-    dest: /lib/systemd/system/nomad.service
-    remote_src: no
-    src: nomad.service
-  become: yes
 
 - name: Copy the nomad agent configuration
   template:
